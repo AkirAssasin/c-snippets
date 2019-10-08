@@ -10,7 +10,7 @@
 // 2 5
 // 6 7
 
-void getBraille (int* bools, char* string) {
+void getBraille (int* _bools, char* _string) {
 
     // first six bools
 
@@ -20,18 +20,18 @@ void getBraille (int* bools, char* string) {
     for (int i = 0; i < 6; ++i) {
 
         scale = (char)(i ? (scale << 1) : 1);
-        if (bools[i]) delta += scale;
+        if (_bools[i]) delta += scale;
 
     }
 
-    string[2] = delta - 128;
+    _string[2] = delta - 128;
 
     // last two bools
 
-    if (bools[6] == bools[7]) {
-        string[1] = bools[6] ? '\xA3' : '\xA0';
+    if (_bools[6] == _bools[7]) {
+        _string[1] = _bools[6] ? '\xA3' : '\xA0';
     } else {
-        string[1] = bools[6] ? '\xA0' : '\xA2';
+        _string[1] = _bools[6] ? '\xA0' : '\xA2';
     }
 
 }
