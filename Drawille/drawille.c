@@ -36,14 +36,81 @@ void getBraille (int* _bools, char* _string) {
 
 }
 
+int dx[8] = { 0, 0, 0, 1, 1, 1, 0, 1 };
+int dy[8] = { 0, 1, 2, 0, 1, 2, 3, 3 };
+
+#define BRAILLE_WIDTH_FACTOR 2
+#define BRAILLE_HEIGHT_FACTOR 4
+
+void printBraille (int _width, int _height, int _array[_width][_height]) {
+
+    // declare arrays (temp implementation)
+
+    int bools[8];
+    char braille[4] = {'\xE2',0,0,0};
+
+    // get braille dimensions
+
+    int brailleWidth = _width / BRAILLE_WIDTH_FACTOR;
+    if (_width % BRAILLE_WIDTH_FACTOR) brailleWidth++;
+
+    int brailleHeight = _height / BRAILLE_HEIGHT_FACTOR;
+    if (_height % BRAILLE_HEIGHT_FACTOR) brailleHeight++;
+
+    // iterate through braille dimensions
+
+    for (int y = 0; y < brailleHeight; ++y) {
+        for (int x = 0; x < brailleWidth; ++x) {
+
+            // fill in bools array
+
+            for (int i = 0; i < 8; ++i) {
+
+                int tx = x * BRAILLE_WIDTH_FACTOR + dx[i];
+                int ty = y * BRAILLE_HEIGHT_FACTOR + dy[i];
+
+                if (tx >= _width || ty >= _height) {
+                    bools[i] = 0;
+                    continue;
+                }
+
+                bools[i] = _array[tx][ty];
+
+            }
+
+            // print braille
+
+            getBraille(bools,braille);
+            printf("%s",braille);
+
+        }
+
+        printf("\n");
+
+    }
+
+}
+
 int main (void) {
 
-    int idk[8] = {0, 0, 1, 1, 1, 1, 0, 1};
+    int height = 50;
+    int width = 50;
 
-    char braille[4] = {'\xE2',0,0,0};
+    float sqradius = 25.0f * 25.0f;
+
+    int array[width][height];
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+
+            float dx = x - width / 2.0f;
+            float dy = y - height / 2.0f;
+
+            array[x][y] = (dx * dx) + (dy * dy) <= sqradius;
+        }
+    }
     
-    getBraille(idk,braille);
-    printf("%s",braille);
+    printBraille(width,height,array);
 
     return 0;
 
