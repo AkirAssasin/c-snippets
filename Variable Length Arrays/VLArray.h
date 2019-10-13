@@ -33,7 +33,7 @@
 })
 */
 
-#define VLArray_Get(v, i) (*(&v->array[i]))
+#define VLArray_Get(v, i) (v->array[i])
 
 /* ----- */
 
