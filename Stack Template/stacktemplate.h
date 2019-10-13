@@ -13,7 +13,8 @@
     };                                                   \
     Stack_##T *Stack_Create_##T (void);                  \
     void Stack_Push_##T (Stack_##T **_stack, T _in);     \
-    int Stack_Pull_##T (Stack_##T **_stack, T *_out);    
+    int Stack_Pull_##T (Stack_##T **_stack, T *_out);    \
+    void Stack_Clear_##T (Stack_##T **_stack);     
 
 #define DeclareStackForType(T)                           \
     Stack_##T *Stack_Create_##T (void) {                 \
@@ -35,6 +36,14 @@
         free(*_stack);                                   \
         *_stack = nextInStack;                           \
         return 1;                                        \
+    }                                                    \
+    void Stack_Clear_##T (Stack_##T **_stack) {          \
+        Stack_##T *nextInStack = (*_stack)->nextInStack; \
+        while (nextInStack != NULL) {                    \
+            free(*_stack);                               \
+            *_stack = nextInStack;                       \
+            nextInStack = (*_stack)->nextInStack;        \
+        }                                                \
     }
 
 /* ----- */

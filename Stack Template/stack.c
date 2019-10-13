@@ -9,6 +9,9 @@ int main (void) {
 
     Stack_int *stack = Stack_Create_int();
 
+    for (int i = 0; i < 69; ++i) Stack_Push_int(&stack,69);
+    Stack_Clear_int(&stack);
+
     for (int i = 0; i < 69; ++i) Stack_Push_int(&stack,i);
 
     int output;
