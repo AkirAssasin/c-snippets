@@ -2,8 +2,8 @@
 #include <stdlib.h> /* malloc, free */
 #include "stacktemplate.h"
 
-DefineStackForType(int)
 DeclareStackForType(int)
+DefineStackForType(int)
 
 int main (void) {
 

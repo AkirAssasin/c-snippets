@@ -5,7 +5,7 @@
 
 /* ----- */
 
-#define DefineStackForType(T)                            \
+#define DeclareStackForType(T)                           \
     typedef struct Stack_##T Stack_##T;                  \
     struct Stack_##T {                                   \
         T value;                                         \
@@ -16,7 +16,7 @@
     int Stack_Pull_##T (Stack_##T **_stack, T *_out);    \
     void Stack_Clear_##T (Stack_##T **_stack);     
 
-#define DeclareStackForType(T)                           \
+#define DefineStackForType(T)                            \
     Stack_##T *Stack_Create_##T (void) {                 \
         Stack_##T *stack = malloc(sizeof(Stack_##T));    \
         stack->nextInStack = NULL;                       \
