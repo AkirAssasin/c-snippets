@@ -49,6 +49,7 @@ int main (void) {
     }
 
     /* k bye */
+    printf("\nok break\n\n");
     return 0;
 
 }
@@ -188,40 +189,84 @@ int OctalToBinaryTest (void) {
 
 int BinaryToDecimalTest (void) {
 
-    byte question = RandomByte(), answer;
+    /* declaring variables */
+    byte question = RandomByte();
+
+    /* print question */
+    printf("Convert ");
     PrintBinaryByte(question);
-    printf(" is %d\n",question);
-    (void)answer;
+    printf(" into decimal form: \n");
+
+    /* scanf answer */
+    if (ScanfByteAnswer("%d",question)) {
+        printf("Correct! The answer is %d.\n",question);
+    } else {
+        printf("Wrong! The answer is %d.\n",question);
+    }
+
     return 0;
 
 }
 
 int DecimalToBinaryTest (void) {
 
-    byte question = RandomByte(), answer;
+    /* declaring variables */
+    byte question = RandomByte();
+
+    /* print question */
+    printf("Convert decimal %d into 8-bit binary form: \n",question);
+
+    /* scanf answer */
+    if (ScanfBinaryByteAnswer(question)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
     PrintBinaryByte(question);
-    printf(" is %d\n",question);
-    (void)answer;
+    printf(".\n");
+
     return 0;
 
 }
 
 int BinaryToHexadecimalTest (void) {
 
-    byte question = RandomByte(), answer;
+    /* declaring variables */
+    byte question = RandomByte();
+
+    /* print question */
+    printf("Convert ");
     PrintBinaryByte(question);
-    printf(" is %d\n",question);
-    (void)answer;
+    printf(" into hexadecimal form: \n");
+
+    /* scanf answer */
+    if (ScanfByteAnswer("%x",question)) {
+        printf("Correct! The answer is %X.\n",question);
+    } else {
+        printf("Wrong! The answer is %X.\n",question);
+    }
+
     return 0;
 
 }
 
 int HexadecimalToBinaryTest (void) {
 
-    byte question = RandomByte(), answer;
+    /* declaring variables */
+    byte question = RandomByte();
+
+    /* print question */
+    printf("Convert hexadecimal %X into 8-bit binary form: \n",question);
+
+    /* scanf answer */
+    if (ScanfBinaryByteAnswer(question)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
     PrintBinaryByte(question);
-    printf(" is %d\n",question);
-    (void)answer;
+    printf(".\n");
+
     return 0;
 
 }
