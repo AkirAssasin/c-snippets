@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define TEST_COUNT 12
+#define TEST_COUNT 14
 
 typedef unsigned char byte;
 
@@ -24,6 +24,9 @@ int HexadecimalToOctalTest (void);
 int DecimalToHexadecimalTest (void);
 int HexadecimalToDecimalTest (void);
 
+int BinaryAdditionTest (void);
+int BinarySubtractionTest (void);
+
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
     OctalToBinaryTest,
@@ -36,7 +39,9 @@ int (*const tests[TEST_COUNT])(void) = {
     OctalToHexadecimalTest,
     HexadecimalToOctalTest,
     DecimalToHexadecimalTest,
-    HexadecimalToDecimalTest
+    HexadecimalToDecimalTest,
+    BinaryAdditionTest,
+    BinarySubtractionTest
 };
 
 int main (void) {
@@ -70,10 +75,19 @@ int main (void) {
 }
 
 byte RandomByte (void) {
-
-    /* get a random byte (8-bit) */
     return (byte)(rand() % 0x100);
+}
 
+float RandomFloat (void) {
+    return (float)rand() / RAND_MAX;
+}
+
+byte RandomByteBetween (byte _min, byte _max) {
+    return _min + (byte)(RandomFloat() * (_max - _min));
+}
+
+float RandomFloatBetween (float _min, float _max) {
+    return _min + RandomFloat() * (_max - _min);
 }
 
 int BinaryToByte (const char *_binary, byte *const _result) {
@@ -395,6 +409,58 @@ int HexadecimalToDecimalTest (void) {
     } else {
         printf("Wrong! The answer is %d.\n",question);
     }
+
+    return 0;
+
+}
+
+int BinaryAdditionTest (void) {
+
+    byte total = RandomByteBetween(150,255);
+    byte byte1 = (byte)(total * RandomFloatBetween(0.25f,0.75f));
+    byte byte2 = total - byte1;
+
+    /* print question */
+    printf("Unsigned binary addition: ");
+    PrintBinaryByte(byte1);
+    printf(" + ");
+    PrintBinaryByte(byte2);
+    printf(" =\n");
+
+    /* scanf answer */
+    if (ScanfBinaryByteAnswer(total)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
+    PrintBinaryByte(total);
+    printf(".\n");
+
+    return 0;
+
+}
+
+int BinarySubtractionTest (void) {
+
+    byte total = RandomByteBetween(150,255);
+    byte byte1 = (byte)(total * RandomFloatBetween(0.25f,0.75f));
+    byte byte2 = total - byte1;
+
+    /* print question */
+    printf("Unsigned binary subtraction: ");
+    PrintBinaryByte(total);
+    printf(" - ");
+    PrintBinaryByte(byte1);
+    printf(" =\n");
+
+    /* scanf answer */
+    if (ScanfBinaryByteAnswer(byte2)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
+    PrintBinaryByte(byte2);
+    printf(".\n");
 
     return 0;
 
