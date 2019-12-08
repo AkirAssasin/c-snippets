@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define TEST_COUNT 18
+#define TEST_COUNT 20
 
 typedef unsigned char byte;
 typedef signed char sbyte;
@@ -34,6 +34,9 @@ int FromSignedMagnitudeTest (void);
 int ToOnesComplementTest (void);
 int FromOnesComplementTest (void);
 
+int ToTwosComplementTest (void);
+int FromTwosComplementTest (void);
+
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
     OctalToBinaryTest,
@@ -52,7 +55,9 @@ int (*const tests[TEST_COUNT])(void) = {
     ToSignedMagnitudeTest,
     FromSignedMagnitudeTest,
     ToOnesComplementTest,
-    FromOnesComplementTest
+    FromOnesComplementTest,
+    ToTwosComplementTest,
+    FromTwosComplementTest
 };
 
 int main (void) {
@@ -594,6 +599,58 @@ int FromOnesComplementTest (void) {
     printf("Convert ");
     PrintBinaryByte(question);
     printf(" from one\'s complement to decimal: \n");
+
+    /* scanf answer */
+    if (ScanfSByteAnswer("%d",answer)) {
+        printf("Correct! The answer is %d.\n",answer);
+    } else {
+        printf("Wrong! The answer is %d.\n",answer);
+    }
+
+    return 0;
+
+}
+
+byte EncodeTwosComplement (sbyte _sbyte) {
+    
+    byte result = (byte)(_sbyte < 0 ? -_sbyte : _sbyte);
+    if (_sbyte < 0) result = (result ^ 0xFF) + 1;
+    return result;
+
+}
+
+int ToTwosComplementTest (void) {
+
+    /* declaring variables */
+    sbyte question = RandomSignedByte();
+    byte answer = EncodeTwosComplement(question);
+
+    /* print question */
+    printf("Convert decimal %d into two\'s complement 8-bit binary: \n",
+        question);
+
+    /* scanf answer */
+    if (ScanfBinaryByteAnswer(answer)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
+    PrintBinaryByte(answer);
+    printf(".\n");
+
+    return 0;
+
+}
+int FromTwosComplementTest (void) {
+
+    /* declaring variables */
+    sbyte answer = RandomSignedByte();
+    byte question = EncodeTwosComplement(answer);
+
+    /* print question */
+    printf("Convert ");
+    PrintBinaryByte(question);
+    printf(" from two\'s complement to decimal: \n");
 
     /* scanf answer */
     if (ScanfSByteAnswer("%d",answer)) {
