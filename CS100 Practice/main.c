@@ -326,12 +326,38 @@ int DecimalToOctalTest (void) {
 
 int OctalToHexadecimalTest (void) {
     
+    /* declaring variables */
+    byte question = RandomByte();
+
+    /* print question */
+    printf("Convert octal %o into hexadecimal form: \n",question);
+
+    /* scanf answer */
+    if (ScanfByteAnswer("%x",question)) {
+        printf("Correct! The answer is %X.\n",question);
+    } else {
+        printf("Wrong! The answer is %X.\n",question);
+    }
+
     return 0;
 
 }
 
 int HexadecimalToOctalTest (void) {
     
+    /* declaring variables */
+    byte question = RandomByte();
+
+    /* print question */
+    printf("Convert hexadecimal %X into octal form: \n",question);
+
+    /* scanf answer */
+    if (ScanfByteAnswer("%o",question)) {
+        printf("Correct! The answer is %o.\n",question);
+    } else {
+        printf("Wrong! The answer is %o.\n",question);
+    }
+
     return 0;
 
 }
