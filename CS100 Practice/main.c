@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <time.h>
 
-#define TEST_COUNT 14
+#define TEST_COUNT 16
 
 typedef unsigned char byte;
+typedef signed char sbyte;
 
 int BinaryToOctalTest (void);
 int OctalToBinaryTest (void);
@@ -27,6 +28,9 @@ int HexadecimalToDecimalTest (void);
 int BinaryAdditionTest (void);
 int BinarySubtractionTest (void);
 
+int ToSignedMagnitudeTest (void);
+int FromSignedMagnitudeTest (void);
+
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
     OctalToBinaryTest,
@@ -41,7 +45,9 @@ int (*const tests[TEST_COUNT])(void) = {
     DecimalToHexadecimalTest,
     HexadecimalToDecimalTest,
     BinaryAdditionTest,
-    BinarySubtractionTest
+    BinarySubtractionTest,
+    ToSignedMagnitudeTest,
+    FromSignedMagnitudeTest
 };
 
 int main (void) {
@@ -76,6 +82,10 @@ int main (void) {
 
 byte RandomByte (void) {
     return (byte)(rand() % 0x100);
+}
+
+sbyte RandomSignedByte (void) {
+    return (sbyte)(0x80 + (rand() % 0x80));
 }
 
 float RandomFloat (void) {
@@ -461,6 +471,86 @@ int BinarySubtractionTest (void) {
     }
     PrintBinaryByte(byte2);
     printf(".\n");
+
+    return 0;
+
+}
+
+int ScanfSByteAnswer (char *const format, sbyte _check) {
+
+    /* octal and hexadecimal requires 4 bytes */
+    int answer = 0;
+    int sr;
+    
+    /* do the scanf */
+    printf("> ");
+    sr = scanf(format,&answer);
+    ClearScanfBuffer();
+    
+    /* return if correct answer */
+    if (sr != 1 || answer != _check) {
+        return 0;
+    }
+    return 1;
+
+}
+
+sbyte DecodeSignedMagnitude (byte _byte) {
+    
+    sbyte result = _byte & 0x7F;
+    if (_byte & 0x80) result = -result;
+    
+    return 0;
+}
+
+byte EncodeSignedMagnitude (sbyte _sbyte) {
+
+    byte result = (byte)(_sbyte < 0 ? -_sbyte : _sbyte);
+    if (_sbyte < 0) result |= 0x80;
+
+    return result;
+}
+
+int ToSignedMagnitudeTest (void) {
+
+    /* declaring variables */
+    sbyte question = RandomSignedByte();
+    byte answer = EncodeSignedMagnitude(question);
+
+    /* print question */
+    printf("Convert decimal %d into signed ""magnitude 8-bit binary: \n",
+        question);
+
+    /* scanf answer */
+    if (ScanfBinaryByteAnswer(answer)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
+    PrintBinaryByte(answer);
+    printf(".\n");
+
+    return 0;
+
+}
+
+int FromSignedMagnitudeTest (void) {
+
+    /* declaring variables */
+    sbyte answer = RandomSignedByte();
+    byte question = EncodeSignedMagnitude(answer);
+
+    /* print question */
+    printf("Convert ");
+    PrintBinaryByte(question);
+    printf(" from signed magnitude to decimal: \n");
+
+    /* scanf answer */
+    if (ScanfSByteAnswer("%d",answer)) {
+        printf("Correct! The answer is %d.\n",answer);
+    } else {
+        printf("Wrong! The answer is %d.\n",answer);
+    }
 
     return 0;
 
