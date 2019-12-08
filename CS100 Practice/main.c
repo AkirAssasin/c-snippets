@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define TEST_COUNT 6
+#define TEST_COUNT 12
 
 typedef unsigned char byte;
 
@@ -15,13 +15,28 @@ int DecimalToBinaryTest (void);
 int BinaryToHexadecimalTest (void);
 int HexadecimalToBinaryTest (void);
 
+int OctalToDecimalTest (void);
+int DecimalToOctalTest (void);
+
+int OctalToHexadecimalTest (void);
+int HexadecimalToOctalTest (void);
+
+int DecimalToHexadecimalTest (void);
+int HexadecimalToDecimalTest (void);
+
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
     OctalToBinaryTest,
     BinaryToDecimalTest,
     DecimalToBinaryTest,
     BinaryToHexadecimalTest,
-    HexadecimalToBinaryTest
+    HexadecimalToBinaryTest,
+    OctalToDecimalTest,
+    DecimalToOctalTest,
+    OctalToHexadecimalTest,
+    HexadecimalToOctalTest,
+    DecimalToHexadecimalTest,
+    HexadecimalToDecimalTest
 };
 
 int main (void) {
@@ -267,6 +282,68 @@ int HexadecimalToBinaryTest (void) {
     PrintBinaryByte(question);
     printf(".\n");
 
+    return 0;
+
+}
+
+int OctalToDecimalTest (void) {
+    
+    /* declaring variables */
+    byte question = RandomByte();
+
+    /* print question */
+    printf("Convert octal %o into decimal form: \n",question);
+
+    /* scanf answer */
+    if (ScanfByteAnswer("%d",question)) {
+        printf("Correct! The answer is %d.\n",question);
+    } else {
+        printf("Wrong! The answer is %d.\n",question);
+    }
+
+    return 0;
+
+}
+
+int DecimalToOctalTest (void) {
+    
+    /* declaring variables */
+    byte question = RandomByte();
+
+    /* print question */
+    printf("Convert decimal %d into octal form: \n",question);
+
+    /* scanf answer */
+    if (ScanfByteAnswer("%o",question)) {
+        printf("Correct! The answer is %o.\n",question);
+    } else {
+        printf("Wrong! The answer is %o.\n",question);
+    }
+
+    return 0;
+
+}
+
+int OctalToHexadecimalTest (void) {
+    
+    return 0;
+
+}
+
+int HexadecimalToOctalTest (void) {
+    
+    return 0;
+
+}
+
+int DecimalToHexadecimalTest (void) {
+    
+    return 0;
+
+}
+
+int HexadecimalToDecimalTest (void) {
+    
     return 0;
 
 }
