@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define TEST_COUNT 16
+#define TEST_COUNT 18
 
 typedef unsigned char byte;
 typedef signed char sbyte;
@@ -31,6 +31,9 @@ int BinarySubtractionTest (void);
 int ToSignedMagnitudeTest (void);
 int FromSignedMagnitudeTest (void);
 
+int ToOnesComplementTest (void);
+int FromOnesComplementTest (void);
+
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
     OctalToBinaryTest,
@@ -47,7 +50,9 @@ int (*const tests[TEST_COUNT])(void) = {
     BinaryAdditionTest,
     BinarySubtractionTest,
     ToSignedMagnitudeTest,
-    FromSignedMagnitudeTest
+    FromSignedMagnitudeTest,
+    ToOnesComplementTest,
+    FromOnesComplementTest
 };
 
 int main (void) {
@@ -495,20 +500,12 @@ int ScanfSByteAnswer (char *const format, sbyte _check) {
 
 }
 
-sbyte DecodeSignedMagnitude (byte _byte) {
-    
-    sbyte result = _byte & 0x7F;
-    if (_byte & 0x80) result = -result;
-    
-    return 0;
-}
-
 byte EncodeSignedMagnitude (sbyte _sbyte) {
 
     byte result = (byte)(_sbyte < 0 ? -_sbyte : _sbyte);
     if (_sbyte < 0) result |= 0x80;
-
     return result;
+
 }
 
 int ToSignedMagnitudeTest (void) {
@@ -518,7 +515,7 @@ int ToSignedMagnitudeTest (void) {
     byte answer = EncodeSignedMagnitude(question);
 
     /* print question */
-    printf("Convert decimal %d into signed ""magnitude 8-bit binary: \n",
+    printf("Convert decimal %d into signed magnitude 8-bit binary: \n",
         question);
 
     /* scanf answer */
@@ -544,6 +541,59 @@ int FromSignedMagnitudeTest (void) {
     printf("Convert ");
     PrintBinaryByte(question);
     printf(" from signed magnitude to decimal: \n");
+
+    /* scanf answer */
+    if (ScanfSByteAnswer("%d",answer)) {
+        printf("Correct! The answer is %d.\n",answer);
+    } else {
+        printf("Wrong! The answer is %d.\n",answer);
+    }
+
+    return 0;
+
+}
+
+byte EncodeOnesComplement (sbyte _sbyte) {
+    
+    byte result = (byte)(_sbyte < 0 ? -_sbyte : _sbyte);
+    if (_sbyte < 0) result ^= 0xFF;
+    return result;
+
+}
+
+int ToOnesComplementTest (void) {
+
+    /* declaring variables */
+    sbyte question = RandomSignedByte();
+    byte answer = EncodeOnesComplement(question);
+
+    /* print question */
+    printf("Convert decimal %d into one\'s complement 8-bit binary: \n",
+        question);
+
+    /* scanf answer */
+    if (ScanfBinaryByteAnswer(answer)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
+    PrintBinaryByte(answer);
+    printf(".\n");
+
+    return 0;
+
+}
+
+int FromOnesComplementTest (void) {
+
+    /* declaring variables */
+    sbyte answer = RandomSignedByte();
+    byte question = EncodeOnesComplement(answer);
+
+    /* print question */
+    printf("Convert ");
+    PrintBinaryByte(question);
+    printf(" from one\'s complement to decimal: \n");
 
     /* scanf answer */
     if (ScanfSByteAnswer("%d",answer)) {
