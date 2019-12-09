@@ -757,9 +757,10 @@ quad RandomSubIEEEQuad (int _exponent, int _mantissa) {
 
 float QuadToFloat (quad _quad, int _exponent, int _mantissa) {
 
-    float result = 1.0f, sign = 10.0f;
-    byte i;
-    int scale = 0;
+    /* we're not doing special cases because lazy */
+    float result = 0.0f;
+    int i, scale = 0;
+    quad premantissa = 1;
 
     /* compute exponent */
     for (i = 0; i < _exponent; ++i) {
@@ -770,26 +771,32 @@ float QuadToFloat (quad _quad, int _exponent, int _mantissa) {
     }
 
     /* is this a subnormal number? */
-    if (scale == 0) result = 0.0f;
+    if (scale == 0) premantissa = 0;
 
     /* apply bias */
     scale -= (1 << (_exponent - 1)) - 1;
-    if (scale < 0) {
-        scale = -scale;
-        sign = 0.1f;
-    }
 
-    /* compute mantissa */
-    for (i = 0; i < _mantissa; ++i) {
-        quad target = _quad >> (30 - _exponent - i);
+    /* apply mantissa to result */
+    for (i = -1; i < _mantissa; ++i) {
+        
+        /* get mantissa */
+        quad target;
+        if (i < 0) {
+            target = premantissa;
+        } else target = _quad >> (30 - _exponent - i);
+        
+        /* should we apply this? */
         if (target % 2) {
-            result += 1.0f / (2 << i);
-        }
-    }
 
-    /* apply scale */
-    for (i = 0; i < scale; ++i) {
-        result *= sign;
+            /* compute the target exponent */
+            int place = scale - i - 1;
+
+            /* apply mantissa */
+            if (place < 0) {
+                result += 1.0f / (1 << -place);
+            } else result += (1 << place);
+
+        }
     }
 
     /* apply sign */
