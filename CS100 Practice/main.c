@@ -3,7 +3,7 @@
 #include <time.h>
 #include <math.h>
 
-#define TEST_COUNT 23
+#define TEST_COUNT 25
 #define FLOAT_EPSILON 0.00001f
 
 typedef unsigned char byte;
@@ -45,6 +45,9 @@ int TwosComplementAdditionTest (void);
 int DecimalToIEEEByteTest (void);
 int IEEEByteToDecimalTest (void);
 
+int DecimalToSubIEEEByteTest (void);
+int SubIEEEByteToDecimalTest (void);
+
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
     OctalToBinaryTest,
@@ -68,7 +71,9 @@ int (*const tests[TEST_COUNT])(void) = {
     FromTwosComplementTest,
     TwosComplementAdditionTest,
     DecimalToIEEEByteTest,
-    IEEEByteToDecimalTest
+    IEEEByteToDecimalTest,
+    DecimalToSubIEEEByteTest,
+    SubIEEEByteToDecimalTest
 };
 
 int main (void) {
@@ -726,6 +731,22 @@ quad RandomIEEEQuad (int _exponent, int _mantissa) {
 
 }
 
+quad RandomSubIEEEQuad (int _exponent, int _mantissa) {
+
+    /* randomize mantissa */
+    quad result = rand() % (1 << _mantissa);
+
+    /* shift result all the way back */
+    result <<= 31 - _exponent - _mantissa;
+
+    /* give a random sign */
+    if (RandomFloat() > 0.5f) result |= 0x80000000;
+
+    /* return result */
+    return result;
+
+}
+
 float QuadToFloat (quad _quad, int _exponent, int _mantissa) {
 
     float result = 1.0f, sign = 10.0f;
@@ -739,6 +760,9 @@ float QuadToFloat (quad _quad, int _exponent, int _mantissa) {
             scale += 1 << (_exponent - 1 - i);
         }
     }
+
+    /* is this a subnormal number? */
+    if (scale == 0) result = 0.0f;
 
     /* apply bias */
     scale -= (1 << (_exponent - 1)) - 1;
@@ -903,6 +927,54 @@ int IEEEByteToDecimalTest (void) {
 
     /* declaring variables */
     quad answer = RandomIEEEQuad(4,4);
+    float question = QuadToFloat(answer,4,4);
+    int precision = ComputePrecision(answer,4,4);
+
+    /* print question */
+    printf("Assume IEEE754 standard, with 4-bit exponent and 4-bit mantissa.\n"
+        "Convert decimal %.*f into 9-bit binary form: \n",precision,question);
+
+    /* scanf answer */
+    if (ScanfBinaryQuadAnswer(answer,9)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
+    PrintBinaryQuad(answer,9);
+    printf(".\n");
+
+    return 0;
+
+}
+
+int DecimalToSubIEEEByteTest (void) {
+
+    /* declaring variables */
+    quad question = RandomSubIEEEQuad(4,4);
+    float answer = QuadToFloat(question,4,4);
+    int precision = ComputePrecision(question,4,4);
+
+    /* print question */
+    printf("Assume IEEE754 standard, with 4-bit exponent and 4-bit mantissa.\n"
+        "Convert ");
+    PrintBinaryQuad(question,9);
+    printf(" into decimal form: \n");
+
+    /* scanf answer */
+    if (ScanfFloatAnswer(answer)) {
+        printf("Correct! The answer is %.*f.\n",precision,answer);
+    } else {
+        printf("Wrong! The answer is %.*f.\n",precision,answer);
+    }
+
+    return 0;
+
+}
+
+int SubIEEEByteToDecimalTest (void) {
+
+    /* declaring variables */
+    quad answer = RandomSubIEEEQuad(4,4);
     float question = QuadToFloat(answer,4,4);
     int precision = ComputePrecision(answer,4,4);
 
