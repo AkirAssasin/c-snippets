@@ -708,8 +708,12 @@ int TwosComplementAdditionTest (void) {
 
 quad RandomIEEEQuad (int _exponent, int _mantissa) {
 
-    /* randomize exponent and mantissa */
-    quad result = rand() % (1 << (_exponent + _mantissa));
+    /* randomize mantissa */
+    quad result = rand() % (1 << _mantissa);
+
+    /* randomize exponent but don't NaN, INF or subnormal */
+    quad exp = 1 + rand() % ((1 << _exponent) - 2);
+    result |= exp << _mantissa;
 
     /* shift result all the way back */
     result <<= 31 - _exponent - _mantissa;
