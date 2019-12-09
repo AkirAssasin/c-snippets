@@ -3,7 +3,7 @@
 #include <time.h>
 #include <math.h>
 
-#define TEST_COUNT 25
+#define TEST_COUNT 27
 #define FLOAT_EPSILON 0.00001f
 
 typedef unsigned char byte;
@@ -42,11 +42,14 @@ int FromTwosComplementTest (void);
 
 int TwosComplementAdditionTest (void);
 
-int DecimalToIEEEByteTest (void);
 int IEEEByteToDecimalTest (void);
+int DecimalToIEEEByteTest (void);
 
-int DecimalToSubIEEEByteTest (void);
 int SubIEEEByteToDecimalTest (void);
+int DecimalToSubIEEEByteTest (void);
+
+int IEEEToDecimalTest (void);
+int DecimalToIEEETest (void);
 
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
@@ -70,10 +73,12 @@ int (*const tests[TEST_COUNT])(void) = {
     ToTwosComplementTest,
     FromTwosComplementTest,
     TwosComplementAdditionTest,
-    DecimalToIEEEByteTest,
     IEEEByteToDecimalTest,
+    DecimalToIEEEByteTest,
+    SubIEEEByteToDecimalTest,
     DecimalToSubIEEEByteTest,
-    SubIEEEByteToDecimalTest
+    IEEEToDecimalTest,
+    DecimalToIEEETest
 };
 
 int main (void) {
@@ -711,13 +716,16 @@ int TwosComplementAdditionTest (void) {
 
 }
 
-quad RandomIEEEQuad (int _exponent, int _mantissa) {
+quad RandomIEEEQuad (int _exponent, int _expRange, int _mantissa) {
 
     /* randomize mantissa */
     quad result = rand() % (1 << _mantissa);
 
-    /* randomize exponent but don't NaN, INF or subnormal */
-    quad exp = 1 + rand() % ((1 << _exponent) - 2);
+    /* randomize exponent around bias */
+    quad exp = (1 << (_exponent - 1)) - 1;
+    quad delta = (quad)(rand() % _expRange);
+    
+    exp += (RandomFloat() > 0.5f) ? delta : -delta;
     result |= exp << _mantissa;
 
     /* shift result all the way back */
@@ -899,10 +907,10 @@ int ScanfBinaryQuadAnswer (quad _check, int _length) {
 
 }
 
-int DecimalToIEEEByteTest (void) {
+int IEEEByteToDecimalTest (void) {
 
     /* declaring variables */
-    quad question = RandomIEEEQuad(4,4);
+    quad question = RandomIEEEQuad(4,6,4);
     float answer = QuadToFloat(question,4,4);
     int precision = ComputePrecision(question,4,4);
 
@@ -923,10 +931,10 @@ int DecimalToIEEEByteTest (void) {
     
 }
 
-int IEEEByteToDecimalTest (void) {
+int DecimalToIEEEByteTest (void) {
 
     /* declaring variables */
-    quad answer = RandomIEEEQuad(4,4);
+    quad answer = RandomIEEEQuad(4,6,4);
     float question = QuadToFloat(answer,4,4);
     int precision = ComputePrecision(answer,4,4);
 
@@ -947,7 +955,7 @@ int IEEEByteToDecimalTest (void) {
 
 }
 
-int DecimalToSubIEEEByteTest (void) {
+int SubIEEEByteToDecimalTest (void) {
 
     /* declaring variables */
     quad question = RandomSubIEEEQuad(4,4);
@@ -971,7 +979,7 @@ int DecimalToSubIEEEByteTest (void) {
 
 }
 
-int SubIEEEByteToDecimalTest (void) {
+int DecimalToSubIEEEByteTest (void) {
 
     /* declaring variables */
     quad answer = RandomSubIEEEQuad(4,4);
@@ -989,6 +997,53 @@ int SubIEEEByteToDecimalTest (void) {
         printf("Wrong! The answer is ");
     }
     PrintBinaryQuad(answer,9);
+    printf(".\n");
+
+    return 0;
+
+}
+
+int IEEEToDecimalTest (void) {
+
+    /* declaring variables */
+    quad question = RandomIEEEQuad(8,6,5);
+    float answer = QuadToFloat(question,8,5);
+    int precision = ComputePrecision(question,8,5);
+
+    /* print question */
+    printf("Assume IEEE754 single precision standard.\nConvert ");
+    PrintBinaryQuad(question,32);
+    printf(" into decimal form: \n");
+
+    /* scanf answer */
+    if (ScanfFloatAnswer(answer)) {
+        printf("Correct! The answer is %.*f.\n",precision,answer);
+    } else {
+        printf("Wrong! The answer is %.*f.\n",precision,answer);
+    }
+
+    return 0;
+    
+}
+
+int DecimalToIEEETest (void) {
+
+    /* declaring variables */
+    quad answer = RandomIEEEQuad(8,6,5);
+    float question = QuadToFloat(answer,8,5);
+    int precision = ComputePrecision(answer,8,5);
+
+    /* print question */
+    printf("Assume IEEE754 single precision standard.\n"
+        "Convert decimal %.*f into 32-bit binary form: \n",precision,question);
+
+    /* scanf answer */
+    if (ScanfBinaryQuadAnswer(answer,32)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
+    PrintBinaryQuad(answer,32);
     printf(".\n");
 
     return 0;
