@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#define TEST_COUNT 20
+#define TEST_COUNT 21
 
 typedef unsigned char byte;
 typedef signed char sbyte;
@@ -37,6 +37,8 @@ int FromOnesComplementTest (void);
 int ToTwosComplementTest (void);
 int FromTwosComplementTest (void);
 
+int TwosComplementAdditionTest (void);
+
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
     OctalToBinaryTest,
@@ -57,7 +59,8 @@ int (*const tests[TEST_COUNT])(void) = {
     ToOnesComplementTest,
     FromOnesComplementTest,
     ToTwosComplementTest,
-    FromTwosComplementTest
+    FromTwosComplementTest,
+    TwosComplementAdditionTest
 };
 
 int main (void) {
@@ -641,6 +644,7 @@ int ToTwosComplementTest (void) {
     return 0;
 
 }
+
 int FromTwosComplementTest (void) {
 
     /* declaring variables */
@@ -658,6 +662,37 @@ int FromTwosComplementTest (void) {
     } else {
         printf("Wrong! The answer is %d.\n",answer);
     }
+
+    return 0;
+
+}
+
+int TwosComplementAdditionTest (void) {
+
+    /* declaring variables */
+    sbyte sbyte1 = RandomSignedByte();
+    sbyte min = (sbyte1 - 128 < -128) ? -128 : (sbyte1 - 128);
+    sbyte max = (sbyte1 + 127 > 127) ? 127 : (sbyte1 + 127);
+    sbyte total = min + (sbyte)(RandomFloat() * (max - min) * 0.9f);
+    sbyte sbyte2 = total - sbyte1;
+
+    byte totalEncoded = EncodeTwosComplement(total);
+    
+    /* print question */
+    printf("Two\'s complement binary addition: ");
+    PrintBinaryByte(EncodeTwosComplement(sbyte1));
+    printf(" + ");
+    PrintBinaryByte(EncodeTwosComplement(sbyte2));
+    printf(" =\n");
+
+    /* scanf answer */
+    if (ScanfBinaryByteAnswer(totalEncoded)) {
+        printf("Correct! The answer is ");
+    } else {
+        printf("Wrong! The answer is ");
+    }
+    PrintBinaryByte(totalEncoded);
+    printf(".\n");
 
     return 0;
 
