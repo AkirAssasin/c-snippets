@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
+#include <string.h>
 
-#define TEST_COUNT 27
+#define TEST_COUNT 28
 #define FLOAT_EPSILON 0.00001f
 
 typedef unsigned char byte;
@@ -51,6 +52,8 @@ int DecimalToSubIEEEByteTest (void);
 int IEEEToDecimalTest (void);
 int DecimalToIEEETest (void);
 
+int IEEENaNTest (void);
+
 int (*const tests[TEST_COUNT])(void) = {
     BinaryToOctalTest,
     OctalToBinaryTest,
@@ -78,7 +81,8 @@ int (*const tests[TEST_COUNT])(void) = {
     SubIEEEByteToDecimalTest,
     DecimalToSubIEEEByteTest,
     IEEEToDecimalTest,
-    DecimalToIEEETest
+    DecimalToIEEETest,
+    IEEENaNTest
 };
 
 int main (void) {
@@ -1055,4 +1059,64 @@ int DecimalToIEEETest (void) {
 
     return 0;
 
+}
+
+quad RandomNaNIEEEQuad (int _exponent, int _mantissa) {
+
+    /* randomize mantissa */
+    quad result = 1 + (rand() % ((1 << _mantissa) - 1));
+
+    /* set NaN indicator */
+    quad exp = (1 << _exponent) - 1;
+    result |= exp << _mantissa;
+
+    /* shift result all the way back */
+    result <<= 31 - _exponent - _mantissa;
+
+    /* give a random sign */
+    if (RandomFloat() > 0.5f) result |= 0x80000000;
+
+    /* return result */
+    return result;
+
+}
+
+int ScanfStringAnswer (char *const _check) {
+
+    /* declare variables */
+    char input[6];
+    int sr;
+    
+    /* do the scanf */
+    printf("> ");
+    sr = scanf("%5s",input);
+    ClearScanfBuffer();
+
+    /* return if correct answer */
+    if (sr != 1 || strcmp(input,_check)) {
+        return 0;
+    }
+    return 1;
+
+}
+
+int IEEENaNTest (void) {
+
+    /* declaring variables */
+    quad question = RandomNaNIEEEQuad(8,23);
+
+    /* print question */
+    printf("Assume IEEE754 single precision standard.\nConvert ");
+    PrintBinaryQuad(question,32);
+    printf(" into decimal form: \n");
+
+    /* scanf answer */
+    if (ScanfStringAnswer("NaN")) {
+        printf("Correct! The answer is NaN.\n");
+    } else {
+        printf("Wrong! The answer is NaN.\n");
+    }
+
+    return 0;
+    
 }
